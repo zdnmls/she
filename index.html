@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>贪吃蛇 </title>
+    <!--1.构建场景2.元素3.画蛇4.画食物5.跑起来6.控制方向-->
+</head>
+<style>
+    .box{
+        width: 600px;
+        height: 600px;
+        border: 1px solid #111111;
+        margin: 50px auto;
+        background: url(img/0612d073b7a963f9ad2dea655b1f972dd812d61b10614-3xaAUh.jpg) no-repeat;
+        background-size: 100% 100%;
+    }
+    .box div{
+        width: 30px;
+        height: 30px;
+        box-sizing: border-box;
+        /*border:1px solid #64eb3c;*/
+        float: left;
+    }
+    .she{
+        background: #8ce65a;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+
+    }
+    .food{
+        background: #4480e5;
+    }
+    .menu{
+        width: 550px;
+        height: 50px;
+        margin: 20px auto;
+        border-radius: 3px;
+        line-height: 50px;
+    }
+    button{
+        width: 70px;
+        height: 30px;
+    }
+</style>
+<body>
+<div class="menu">
+<button>menu</button>
+<button class="start">开始</button>
+<button class="stop">暂停</button>
+<button class="difficulty">中级难度</button>
+<button class="Mdifficulty">高级难度</button>
+<button>得分</button>
+<!--<button class="repeat">重头再来</button>-->
+</div>
+<div class="box"></div>
+</body>
+</html>
+<script>
+//  构建场景
+    let box=document.querySelector(".box");
+    let diff=document.querySelector(".difficulty");
+    let Mdiff=document.querySelector(".Mdifficulty");
+    let repeat=document.querySelector(".repeat");
+    let str="";
+    for(let i=0;i<20;i++){
+        for(let j=0;j<20;j++){
+            str+=`<div id="c${j}-c${i}"></div>`;
+        }
+    }
+    box.innerHTML=str;
+//  构建元素
+    let she=[
+        {x:0,y:0},
+        {x:1,y:0},
+        {x:2,y:0},
+        {x:3,y:0},
+        {x:4,y:0}
+    ];
+//画蛇
+    she.forEach(val=>{
+        let dom=document.querySelector(`#c${val.x}-c${val.y}`);
+        console.log(dom);
+        dom.classList.add('she');
+    })
+//食物
+    let food=getfood();
+    function getfood() {
+        do{
+            var x=Math.floor(Math.random()*20);
+            var y=Math.floor(Math.random()*20);
+        }while(check(x,y));
+        let fooddom=document.querySelector(`#c${x}-c${y}`);
+        fooddom.classList.add("food");
+        return{x,y};
+    }
+//    检查
+    function check(a,b) {
+        return she.some(val=>val.x==a&&val.y==b);
+    }
+//   移动
+        let way = 'right';
+        function move() {
+//        蛇头坐标
+            let headcoords = she[she.length - 1];
+            let newhead;
+            switch (way) {
+                case 'bottom':
+                    newhead = {x: headcoords.x, y: headcoords.y + 1};
+                    break;
+                case 'top':
+                    newhead = {x: headcoords.x, y: headcoords.y - 1};
+                    break;
+                case 'left':
+                    newhead = {x: headcoords.x - 1, y: headcoords.y};
+                    break;
+                case 'right':
+                    newhead = {x: headcoords.x + 1, y: headcoords.y};
+                    break;
+            }
+
+//        蛇运动轨迹
+            let newheaddom = document.querySelector(`#c${newhead.x}-c${newhead.y}`);
+//      判断游戏结束条件
+            let stop = document.querySelector(".stop");
+            let start = document.querySelector(".start");
+            //        暂停按键
+            stop.onclick = function () {
+                clearInterval(t);
+            }
+//        开始按键
+            start.onclick = function fn1() {
+                t = setInterval(move, 150);
+            }
+//        中级难度
+            diff.onclick = function () {
+                t = setInterval(move, 100);
+            }
+//        高难度
+            Mdiff.onclick = function () {
+                t = setInterval(move, 50);
+            }
+//        从新开始
+            if (!newheaddom || check(newhead.x, newhead.y)) {
+                alert('哈哈  完蛋');
+                clearInterval(t);
+            }
+//        变色
+            newheaddom.className = ('she');
+//        放入蛇身
+            she.push(newhead);
+//        吃豆豆
+            if (newhead.x == food.x && newhead.y == food.y) {
+                food = getfood();
+            }
+            else {
+//        去蛇尾
+                let end = she.shift();
+                let enddom = document.querySelector(`#c${end.x}-c${end.y}`);
+                enddom.classList.remove('she');
+            }
+        }
+    let t=setInterval(move,150);
+//    键盘控制方向
+    document.onkeydown=function (e) {
+        let code=e.which;
+        switch (code){
+            case 37:
+                if(way=='right'){
+                    return
+                }
+                way='left';
+                break;
+            case 38:
+                if(way=='bottom'){
+                    return
+                }
+                way='top';
+                break;
+            case 39:
+                if(way=='left'){
+                    return
+                }
+                way='right';
+                break;
+            case 40:
+                if(way=='top'){
+                    return
+                }
+                way='bottom';
+                break;
+        }
+    }
+
+</script>
+
+
+
+
+
+
+
+
